@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src='/socket.io/socket.io.js'></script>
+    <script src='https://code.jquery.com/jquery-1.11.1.js'></script>
+    <script>
+        $(function(){
+            var socket = io.connect('http://localhost:3003');
+            var room = $('#room').val();
+            $('#chatbox').hide();
+            $('form').submit(function() {
+                socket.emit('join', $('#room').val());
+                $('#room').val('');
+                return false;
+            });
+
+            socket.on('show chat box', function(data){
+                if (data[0] == true)
+                {
+                    $('#chatbox').show();
+                    room = data[1];
+                }
+            });
+
+            $('#send-msg').click(function() {
+                console.log("here")
+                var jsonArr = {
+                    msg: $('#messagebox').val(),
+                    room: room
+                }
+                console.log(jsonArr)
+                socket.emit('message', jsonArr);
+                $('#messagebox').val('');
+            });
+        });
+    </script>
+</head>
+<body>
+    <form action="">
+        <input id="name" autocomplete="false" placeholder="username">
+        <input id='room' autocomplete="off" placeholder="Room"><button type="submit">Join</button>
+
+        <div id='chatbox'>
+        <form id='send-msg-form'>
+            
+        <input type="text" name="message" id="messagebox"> <button id="send-msg">Send</button>
+        </form>
+        </div>
+    </form>
+</body>
+</html>
